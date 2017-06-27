@@ -1,3 +1,9 @@
 cpppo==3.9.5
 greenery==2.1
 ipaddress==1.0.18
+Flask
+Flask-Environments
+flask-socketio
+eventlet
+argparse
+munch==2.1.1
