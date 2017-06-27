@@ -1,0 +1,58 @@
+<html>
+<head>
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lodash.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+
+    <script type="text/x-template" id="device-template" charset="utf-8">
+      <div id="container_<%= device.id %>">
+        <h1 class="device_name"     id="name_<%= device.id %>"      > <%= device.name %>      </h1>
+        <h2 class="device_position" id="position_<%= device.id %>"  > <%= device.position %>  </h1>
+        <h2 class="device_timestamp"id="timestamp_<%= device.id %>" > <%= device.timestamp %> </h1>
+      </div>
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+
+        var devices = {};
+        var socket = io();
+
+        var deviceTemplate = _.template(document.getElementById('device-template').text);
+        socket.on('position', function(device) {
+          updateDevice(device);
+        });
+
+        function addDevice (device) {
+          var nodeText = deviceTemplate({device: device});
+          var nodeFragment = document.createRange().createContextualFragment(nodeText);
+          document.getElementById('devices_container').appendChild(nodeFragment);
+          devices[device.id] = {
+            device: device,
+            node: document.getElementById('container_' + device.id)
+          }
+        }
+
+        function updateDevice (device) {
+          var id = device.id;
+
+          if (!devices[id]) {
+            return addDevice(device);
+          }
+
+          document.getElementById('name_'+ id).textContent      = device.name;
+          document.getElementById('position_'+ id).textContent  = device.position;
+          document.getElementById('timestamp_'+ id).textContent = device.timestamp;
+        }
+    </script>
+
+    <style type="text/css">
+        .device_name, .device-position, .device-timestamp {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="devices_container">
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+    "devices": [
+        {
+            "host": "localhost",
+            "port": 44818,
+            "interval": 1000,
+            "name": "Simulated device"
+        },
+        {
+            "host": "localhost",
+            "port": 44818,
+            "interval": 500,
+            "name": "Another simulated device with different polling interval"
+        }
+    ]
+}
