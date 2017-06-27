@@ -1,0 +1,3 @@
+cpppo==3.9.5
+greenery==2.1
+ipaddress==1.0.18
