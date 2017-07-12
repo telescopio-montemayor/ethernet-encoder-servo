@@ -6,9 +6,12 @@
 
     <script type="text/x-template" id="device-template" charset="utf-8">
       <div id="container_<%= device.id %>">
-        <h1 class="device_name"     id="name_<%= device.id %>"      > <%= device.name %>      </h1>
-        <h2 class="device_position" id="position_<%= device.id %>"  > <%= device.position %>  </h1>
-        <h2 class="device_timestamp"id="timestamp_<%= device.id %>" > <%= device.timestamp %> </h1>
+        <h1 class="device_name"         id="name_<%= device.id %>"         > <%= device.name %>         </h1>
+        <h2 class="device_steps"        id="steps_<%= device.id %>"        > <%= device.steps %>        </h1>
+        <h2 class="device_offset"       id="offset_<%= device.id %>"       > <%= device.offset %>       </h1>
+        <h2 class="device_position raw" id="position_raw_<%= device.id %>" > <%= device.position_raw %> </h1>
+        <h2 class="device_position deg" id="position_deg_<%= device.id %>" > <%= device.position_deg %> </h1>
+        <h2 class="device_timestamp"    id="timestamp_<%= device.id %>"    > <%= device.timestamp %>    </h1>
       </div>
     </script>
 
@@ -39,8 +42,11 @@
             return addDevice(device);
           }
 
-          document.getElementById('name_'+ id).textContent      = device.name;
-          document.getElementById('position_'+ id).textContent  = device.position;
+          document.getElementById('name_'+ id).textContent   = device.name;
+          document.getElementById('steps_'+ id).textContent  = device.steps;
+          document.getElementById('offset_'+ id).textContent = device.offset;
+          document.getElementById('position_raw_'+ id).textContent  = device.position_raw;
+          document.getElementById('position_deg_'+ id).textContent  = device.position_deg;
           document.getElementById('timestamp_'+ id).textContent = device.timestamp;
         }
     </script>

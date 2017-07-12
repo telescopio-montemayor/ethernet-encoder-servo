@@ -38,13 +38,18 @@ def failure(exc):
 def build_process_function(device):
     def _process(par, val):
         now = datetime.now().isoformat()
+        steps = device['steps']
+        offset = device['offset']
         position = val[0]
         socketio.emit('position', {
             'name': device['name'],
             'host': device['host'],
             'port': device['port'],
+            'steps': steps,
+            'offset': offset,
             'id': device['id'],
-            'position': position,
+            'position_raw': position,
+            'position_deg': 360.0 * (position - offset) / steps,
             'timestamp': now,
         }, broadcast=True)
         devices_by_id[device['id']]['position'] = position
@@ -128,6 +133,8 @@ if __name__ == '__main__':
         config = json.load(config_file)
         for idx, device in enumerate(config.get('devices', [])):
             device.setdefault('port', 44818)
+            device.setdefault('steps', 262144)
+            device.setdefault('offset', 0)
             device.setdefault('interval', default_interval)
             device_id = '{} {}:{}'.format(idx, device['host'], device['port'])
             device['id'] = device_id

@@ -4,6 +4,8 @@
             "host": "localhost",
             "port": 44818,
             "interval": 1000,
+            "steps": 262144,
+            "offset": 0,
             "name": "Simulated device"
         },
         {

@@ -25,6 +25,8 @@ Copy the file *config_sample.json* to config.json and edit as needed.
             "port": 44818,              // optional, defaults to 44818
             "interval": 1000,           // Polling interval in milliseconds. Optional. Uses the --interval argument if passed.
                                         // Otherwise defaults to 1000 (1 second)
+            "steps": 262144,            // Steps per revolution, defaults to 262144.
+            "offset": 0,                // Position offset, defaults to 0.
             "name": "Simulated device"  // Name to display. Optional. Defaults to 'position host:port'.
         }
     ]
