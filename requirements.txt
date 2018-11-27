@@ -4,6 +4,7 @@ ipaddress==1.0.18
 Flask
 Flask-Environments
 flask-socketio
+flask-restplus==0.11.0
 eventlet
 argparse
-munch==2.1.1
+-e git://github.com/telescopio-montemayor/montemayor-common#egg=montemayor-common
