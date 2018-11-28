@@ -1,6 +1,7 @@
-# Ethernet Encoder Server
+# Ethernet Encoder Servo
 
-Just a small server to expose ethernet encoders using the Common Industrial Protocol via SocketIO and REST.
+Networked servo controller around CIP encoders and step/direction motors for use with a telescope.
+This project is developed around Allen Bradley 842E absolute encoders but should work with others.
 
 ## Installation
 
@@ -21,13 +22,17 @@ Copy the file *config_sample.json* to config.json and edit as needed.
     "devices": [
         // One of more of the following:
         {
-            "host": "localhost",        // mandatory
+            "name": "Simulated device"  // Name to display.
+            "host": "localhost",        // mandatory, host or ip address of the ethernet encoder
             "port": 44818,              // optional, defaults to 44818
-            "interval": 1000,           // Polling interval in milliseconds. Optional. Uses the --interval argument if passed.
-                                        // Otherwise defaults to 1000 (1 second)
-            "steps": 262144,            // Steps per revolution, defaults to 262144.
+            "interval": 1000,           // Polling interval in milliseconds. Optional. Defaults to 50 milliseconds
+            "steps": 25600,             // Steps per revolution of the stepper driver, defaults to 25600.
             "offset": 0,                // Position offset, defaults to 0.
-            "name": "Simulated device"  // Name to display. Optional. Defaults to 'position host:port'.
+            "gear_ratio_num": 1,        // If this motor is geared, this is the output/input ratio.
+            "gear_ratio_den": 256,      //
+            "axis": "B",                // Axis on the step/direction usb interface.
+            "invert": false,            // Flips the direction of increasing angle.
+            "max_speed": 20000          // Maximum speed in steps per second.
         }
     ]
 }
@@ -36,27 +41,43 @@ Copy the file *config_sample.json* to config.json and edit as needed.
 Then run:
 
 ```
-    ./ethernet_encoder_server.py --config config.json
+    ./ethernet_encoder_servo.py --config config.json
 ```
 
-To start the server listening on http://localhost:5000. Besides that page and websocket events there's also the route
-*/devices* listing all the configured devices and their last position.
+To start the server listening on http://localhost:5000. Go to http://localhost:5000/api to explore the available
+commands.
 
 The full set of options is:
 ```
-    ./ethernet_encoder_server.py --help
-    usage: ethernet_encoder_server.py [-h] [--debug] [--host HOST] [--port PORT]
-                                      --config CONFIG [--interval INTERVAL]
+$ ./ethernet_encoder_servo.py --help
+usage: ethernet_encoder_servo.py [-h] [--debug] [--dry-run] [--host HOST]
+                                 [--port PORT] --config CONFIG
+                                 [--serial SERIAL]
 
-    optional arguments:
-      -h, --help           show this help message and exit
-      --debug              Shows debug messages
-      --host HOST          The hostname or IP address for the server to listen on.
-                           Defaults to 127.0.0.1
-      --port PORT          The port number for the server to listen on. Defaults
-                           to 5000
-      --config CONFIG      Path to the configuration JSON file
-      --interval INTERVAL  Default polling interval in milliseconds
+optional arguments:
+  -h, --help       show this help message and exit
+  --debug          Shows debug messages
+  --dry-run        Do not connect to the encoders or controllers
+  --host HOST      The hostname or IP address for the server to listen on.
+                   Defaults to 127.0.0.1
+  --port PORT      The port number for the server to listen on. Defaults to
+                   5000
+  --config CONFIG  Path to the configuration JSON file
+  --serial SERIAL  Serial port to use for speed control (/dev/ttyUSB0)
 ```
 
 
+## Motor control protocol
+
+The control message format is:
+
+```
+\n[AXIS][SPEED]\n
+```
+
+Where *AXIS* is one of A, B... etc. (uppercase) and speed is the desired steps per second for that axis.
+For example:
+
+```
+\nA12345\n
+```

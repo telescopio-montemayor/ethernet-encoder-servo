@@ -4,7 +4,6 @@ import eventlet
 # cpppo uses blocking network calls, so we need this in order to play nice with flask-socketio
 eventlet.monkey_patch()     # noqa
 
-import attr
 import json
 import logging
 import argparse
@@ -22,10 +21,8 @@ from cpppo.server.enip import poll
 import api
 from control import devices
 
-log = logging.getLogger('ethernet-encoder-server')
+log = logging.getLogger('ethernet-encoder-servo')
 
-SIDEREAL_CPS = 1092.266
-SIDEREAL_CPS = 1084.7
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -35,11 +32,8 @@ socketio = SocketIO(app)
 
 POSITION_PARAM = '@0x23/1/0x0a'
 VELOCITY_PARAM = '@0x23/1/0x18'
-POSITION_VELOCITY_QUERY = [('@0x23/1/0x0a', 'DINT'), ('@0x23/1/0x18', 'DINT')]
+VELOCITY_QUERY = [('@0x23/1/0x18', 'DINT')]
 POSITION_VELOCITY_QUERY = [('@0x23/1/0x0a', 'DINT')]
-
-
-test_signal = False
 
 
 def failure(exc):
@@ -60,7 +54,6 @@ def build_process_function(device):
             return
 
         value = val[0]
-        #device[parameter] = value
 
         controller = device.controller
         state = controller.state
@@ -191,7 +184,6 @@ if __name__ == '__main__':
         config = json.load(config_file)
         for idx, device_config in enumerate(config.get('devices', [])):
             device = devices.create(**device_config)
-            # XXX FIXME: device_id = '{} {}:{}'.format(idx, device['host'], device['port'])
 
             if not args.dry_run:
                 serial_port = serial.Serial(args.serial, baudrate=57600)
