@@ -24,26 +24,17 @@ class DeviceStatus(BaseResource):
         return self.get_device(name)
 
 
-# XXX FIXME: metodo no tienen que ser GET
-@ns.route('/<string:name>/track/on')
+@ns.route('/<string:name>/tracking')
 @ns.param('name', 'The servo controller name as configured')
-class DeviceTrackON(BaseResource):
-    @ns.doc('Set this servo to track the current AstronomicalPosition')
+class DeviceTracking(BaseResource):
+    @ns.doc('Set this servo to track or not the current AstronomicalPosition')
     @ns.marshal_with(models.DeviceStatus)
-    def get(self, name):
+    @ns.expect(models.Tracking)
+    def put(self, name):
         device = self.get_device(name)
 
-        device.controller.tracking = True
+        device.controller.tracking = api.payload['tracking']
         return device
 
 
-@ns.route('/<string:name>/track/off')
-@ns.param('name', 'The servo controller name as configured')
-class DeviceTrackOFF(BaseResource):
-    @ns.doc('Set this servo to track the current AstronomicalPosition')
-    @ns.marshal_with(models.DeviceStatus)
-    def get(self, name):
-        device = self.get_device(name)
 
-        device.controller.tracking = False
-        return device

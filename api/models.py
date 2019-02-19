@@ -25,6 +25,11 @@ RawPosition = api.model('RawPosition', {
 })
 
 
+Tracking = api.model('Tracking', {
+    'tracking': fields.Boolean,
+})
+
+
 AnglePosition = api.model('AnglePosition', {
     'degrees': fields.Integer,
     'minutes': fields.Integer,
