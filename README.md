@@ -22,17 +22,20 @@ Copy the file *config_sample.json* to config.json and edit as needed.
     "devices": [
         // One of more of the following:
         {
-            "name": "Simulated device"  // Name to display.
-            "host": "localhost",        // mandatory, host or ip address of the ethernet encoder
-            "port": 44818,              // optional, defaults to 44818
-            "interval": 1000,           // Polling interval in milliseconds. Optional. Defaults to 50 milliseconds
-            "steps": 25600,             // Steps per revolution of the stepper driver, defaults to 25600.
-            "offset": 0,                // Position offset, defaults to 0.
-            "gear_ratio_num": 1,        // If this motor is geared, this is the output/input ratio.
-            "gear_ratio_den": 256,      //
-            "axis": "B",                // Axis on the step/direction usb interface.
-            "invert": false,            // Flips the direction of increasing angle.
-            "max_speed": 20000          // Maximum speed in steps per second.
+            "name": "Simulated device",   // Verbose name to display in user interfaces.
+            "id": "some unique name",     // Device id, defaults to *name* if not given.
+            "host": "localhost",          // mandatory, host or ip address of the ethernet encoder
+            "port": 44818,                // optional, defaults to 44818
+            "interval": 1000,             // Polling interval in milliseconds. Optional. Defaults to 50 milliseconds
+            "steps": 25600,               // Steps per revolution of the stepper driver, defaults to 25600.
+            "offset": 0,                  // Position offset, defaults to 0.
+            "gear_ratio_num": 1,          // If this motor is geared, this is the output/input ratio.
+            "gear_ratio_den": 256,        //
+            "axis": "B",                  // Axis on the step/direction usb interface.
+            "invert": false,              // Flips the direction of increasing angle.
+            "max_speed": 20000,           // Maximum speed in steps per second.
+            "supports_hour_angle": true,  // If this axis can be positioned in hour angle units.
+            "can_track": true             // If this axis can track a target with constant speed.
         }
     ]
 }

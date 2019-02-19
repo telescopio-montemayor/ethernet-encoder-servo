@@ -12,12 +12,12 @@ __devices = []
 __devices_by_id = {}
 
 
-def get(name=None):
-    if name is None:
+def get(id=None):
+    if id is None:
         return __devices
     else:
         for device in __devices:
-            if device.name == name:
+            if device.id == id:
                 return device
     return None
 
@@ -25,6 +25,12 @@ def get(name=None):
 @attr.s
 class Device(object):
     name = attr.ib(default='')
+    id = attr.ib()
+
+    @id.default
+    def default_id(self):
+        return self.name
+
     host = attr.ib(default=None)
     port = attr.ib(default=44818)
     steps = attr.ib(default=25600)
@@ -35,6 +41,8 @@ class Device(object):
     offset = attr.ib(default=0)
     max_speed = attr.ib(default=DEFAULT_MAX_SPEED)
     interval = attr.ib(default=DEFAULT_INTERVAL)
+    supports_hour_angle = attr.ib(default=False)
+    can_track = attr.ib(default=False)
     serial_port = attr.ib(default=None, init=False)
     controller = attr.ib(init=False, default=attr.Factory(control.ServoController, takes_self=True))
 

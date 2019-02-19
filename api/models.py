@@ -5,6 +5,7 @@ from api import api
 
 Device = api.model('Device', {
     'name': fields.String,
+    'id':   fields.String,
     'host': fields.String,
     'port': fields.Integer,
     'steps': fields.Integer,
@@ -13,8 +14,11 @@ Device = api.model('Device', {
     'interval': fields.Integer,
     'invert': fields.Boolean,
     'serial_port': fields.String,
+    'supports_hour_angle': fields.Boolean,
+    'can_track': fields.Boolean,
     # XXX FIXME: 'controller': fields.
 })
+
 
 RawPosition = api.model('RawPosition', {
     'value': fields.Integer,
