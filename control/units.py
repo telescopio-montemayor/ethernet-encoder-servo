@@ -81,6 +81,13 @@ class AnglePosition:
     def to_decimal(self):
         return self.degrees + self.minutes / 60.0 + self.seconds / 3600.0
 
+    def to_dict(self):
+        return {
+            'degrees': self.degrees,
+            'minutes': self.minutes,
+            'seconds': self.seconds
+        }
+
     @classmethod
     def from_decimal(cls, angle):
         degrees, minutes, seconds = decimal_to_dms(angle)
@@ -104,3 +111,11 @@ class AstronomicalPosition:
 
     def to_degrees(self):
         return ra_to_deg(self.to_decimal(), self.longitude)
+
+    def to_dict(self):
+        return {
+            'hours':   self.hours,
+            'minutes': self.minutes,
+            'seconds': self.seconds,
+            'longitude': self.longitude
+        }
