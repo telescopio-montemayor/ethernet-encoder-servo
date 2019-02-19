@@ -255,12 +255,12 @@ class ServoController:
     @target_raw.setter
     def target_raw(self, raw_target):
         self.pid_controller.SetPoint = raw_target
-        self._astronomical_target = AstronomicalPosition.from_degrees(self.target_angle)
+        self._astronomical_target = AstronomicalPosition.from_degrees(self.target_angle.to_decimal())
 
     @property
     def target_angle(self):
         target = self.target_raw * self.RAW_TO_ANGLE
-        return target
+        return AnglePosition.from_decimal(target)
 
     @target_angle.setter
     def target_angle(self, angle):
@@ -270,7 +270,7 @@ class ServoController:
     def target_astronomical(self):
         if self._astronomical_target is not None:
             return self._astronomical_target
-        return AstronomicalPosition.from_degrees(self.target_angle)
+        return AstronomicalPosition.from_degrees(self.target_angle.to_decimal())
 
     @target_astronomical.setter
     def target_astronomical(self, target):
