@@ -59,7 +59,7 @@ def build_process_function(device):
         state = controller.state
         controller.update(value)
 
-        socketio.emit(parameter, {
+        state.update({
             'estimated_speed': state['speed_cps'],
             'id': device.id,
             'name': device.name,
@@ -73,7 +73,12 @@ def build_process_function(device):
             'raw_value': value,
             'control_out': state['speed_cps'],
             'timestamp': now_formatted,
-        }, broadcast=True)
+            'target_angle': state['target_angle'].to_dict(),
+            'target_astronomical': state['target_astronomical'].to_dict(),
+            'position_angle': state['position_angle'].to_dict(),
+            'position_astronomical': state['position_astronomical'].to_dict(),
+        })
+        socketio.emit(parameter, state, broadcast=True)
 
     return _process
 
