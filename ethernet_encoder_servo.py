@@ -61,6 +61,7 @@ def build_process_function(device):
 
         socketio.emit(parameter, {
             'estimated_speed': state['speed_cps'],
+            'id': device.id,
             'name': device.name,
             'host': device.host,
             'port': device.port,
@@ -68,8 +69,6 @@ def build_process_function(device):
             'dt': state['dt'],
             'steps': device.steps,
             'offset': device.offset,
-            # XXX FIXME 'id': device['id'],
-            'id': device.name,
             'value': state['position'],
             'raw_value': value,
             'control_out': state['speed_cps'],
