@@ -1,4 +1,4 @@
-from montemayor.common import units
+from control import units
 
 from api import api, BaseResource
 from . import models

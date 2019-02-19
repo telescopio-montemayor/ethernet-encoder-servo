@@ -1,7 +1,7 @@
 import datetime
 from collections import deque
 
-from montemayor.common.units import AnglePosition, AstronomicalPosition
+from control.units import AnglePosition, AstronomicalPosition
 
 STEPS_PER_REVOLUTION = 25600
 COUNTS_PER_REVOLUTION = 262144
