@@ -264,7 +264,10 @@ class ServoController:
 
     @target_angle.setter
     def target_angle(self, angle):
-        self.target_raw = angle * self.ANGLE_TO_RAW
+        try:
+            self.target_raw = angle * self.ANGLE_TO_RAW
+        except TypeError:
+            self.target_raw = angle.to_decimal() * self.ANGLE_TO_RAW
 
     @property
     def target_astronomical(self):
