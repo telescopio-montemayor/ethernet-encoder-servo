@@ -62,11 +62,13 @@ class DeviceGotoRelativeAngle(BaseResource):
     def put(self, name):
         device = self.get_device(name)
 
-        target = units.AnglePosition()
-        target.degrees = api.payload['degrees']
-        target.minutes = api.payload['minutes']
-        target.seconds = api.payload['seconds']
-        device.controller.target_angle += target.to_decimal()
+        current_target = device.controller.target_angle
+        current_target.degrees += api.payload['degrees']
+        current_target.minutes += api.payload['minutes']
+        current_target.seconds += api.payload['seconds']
+
+        device.controller.target_angle = current_target
+
         return device
 
 
