@@ -254,7 +254,7 @@ class ServoController:
 
     @target_raw.setter
     def target_raw(self, raw_target):
-        self.pid_controller.SetPoint = raw_target
+        self.pid_controller.SetPoint = raw_target + self._state['offset']
         self._astronomical_target = AstronomicalPosition.from_degrees(self.target_angle.to_decimal())
 
     @property
@@ -283,7 +283,7 @@ class ServoController:
 
     @property
     def position(self):
-        return self._state['position']
+        return self._state['position'] - self._state['offset']
 
     @property
     def position_angle(self):
@@ -295,9 +295,7 @@ class ServoController:
         return AstronomicalPosition.from_degrees(self.position_angle.to_decimal())
 
     def sync_raw(self, real_raw_position):
-        if self.device.invert:
-            real_raw_position = COUNTS_PER_REVOLUTION - real_raw_position
-        self._state['offset'] = self.position - real_raw_position
+        self._state['offset'] = self._state['position'] - real_raw_position
 
     def sync_angle(self, real_angle_position):
         return self.sync_raw(real_angle_position * self.ANGLE_TO_RAW)
@@ -314,8 +312,6 @@ class ServoController:
 
         if device.invert:
             feedback_value = COUNTS_PER_REVOLUTION - feedback_value
-
-        feedback_value = feedback_value - state['offset']
 
         if state['old_value'] is None:
             state['position'] = feedback_value
