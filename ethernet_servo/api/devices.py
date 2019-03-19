@@ -1,6 +1,6 @@
-import control
+import ethernet_servo.control as control
+from ethernet_servo.api import api, BaseResource
 
-from api import api, BaseResource
 from . import models
 
 
@@ -38,3 +38,15 @@ class DeviceTracking(BaseResource):
 
 
 
+
+@ns.route('/<string:name>/reset')
+@ns.param('name', 'The servo controller name as configured')
+class DeviceReset(BaseResource):
+    @ns.doc('Set this servo target to current position')
+    @ns.marshal_with(models.DeviceStatus)
+    def get(self, name):
+        device = self.get_device(name)
+
+        device.controller.target_raw = device.controller.position
+        #device.controller.tracking = True
+        return device

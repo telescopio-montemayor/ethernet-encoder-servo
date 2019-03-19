@@ -1,6 +1,6 @@
-from control import units
+from ethernet_servo.control import units
+from ethernet_servo.api import api, BaseResource
 
-from api import api, BaseResource
 from . import models
 
 

@@ -1,6 +1,6 @@
 import attr
 
-import control
+from . import control
 
 
 # Default polling time in milliseconds

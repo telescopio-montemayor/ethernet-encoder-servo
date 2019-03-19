@@ -1,0 +1,3 @@
+recursive-include ethernet_servo *
+include README.md
+include LICENSE.txt

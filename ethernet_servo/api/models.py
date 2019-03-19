@@ -1,6 +1,6 @@
 from flask_restplus import fields
 
-from api import api
+from ethernet_servo.api import api
 
 
 Device = api.model('Device', {

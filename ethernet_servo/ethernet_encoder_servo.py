@@ -18,8 +18,8 @@ import serial
 from cpppo.server.enip.get_attribute import proxy_simple
 from cpppo.server.enip import poll
 
-import api
-from control import devices
+from . import api
+from .control import devices
 
 log = logging.getLogger('ethernet-encoder-servo')
 
@@ -140,7 +140,7 @@ def ws_set_control_state(new_state):
         pid_controller.SetPoint = setpoint
 
 
-if __name__ == '__main__':
+def main():
     import signal
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--serial',
                         type=str,
-                        default='/dev/ttyUSB0',
+                        default='/dev/ttyACM0',
                         help='Serial port to use for speed control (/dev/ttyUSB0)')
 
     args = parser.parse_args()

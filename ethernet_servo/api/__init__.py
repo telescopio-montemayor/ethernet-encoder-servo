@@ -7,7 +7,7 @@ from flask_restplus import Api, Resource
 from flask_cors import CORS
 
 
-import control
+from ethernet_servo import control
 
 
 log = logging.getLogger(__name__)

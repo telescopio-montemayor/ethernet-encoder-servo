@@ -1,7 +1,7 @@
 import datetime
 from collections import deque
 
-from control.units import AnglePosition, AstronomicalPosition
+from ethernet_servo.control.units import AnglePosition, AstronomicalPosition
 
 STEPS_PER_REVOLUTION = 25600
 COUNTS_PER_REVOLUTION = 262144
@@ -210,7 +210,7 @@ class ServoController:
         DEADBAND_LIMIT = COUNTS_PER_REVOLUTION / (2.0 * device.steps)
 
         self._state = {
-            'open_loop': False,
+            'closed_loop': True,
             'old_value': None,
             'old_timestamp': None,
             'position': 0,  # this takes into account wraparounds
@@ -247,6 +247,14 @@ class ServoController:
         })
         state.pop('old_timestamp', None)
         return state
+
+    @property
+    def closed_loop(self):
+        return self._state['closed_loop']
+
+    @closed_loop.setter
+    def closed_loop(self, value):
+        self._state['closed_loop'] = bool(value)
 
     @property
     def target_raw(self):
@@ -346,7 +354,10 @@ class ServoController:
         if self.tracking:
             self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
 
-        new_cps = self.pid_controller.update(position)
+        if state['closed_loop']:
+            new_cps = self.pid_controller.update(position)
+        else:
+            self.target_raw = position
 
         if device.invert:
             new_cps = -1.0 * new_cps
@@ -356,6 +367,7 @@ class ServoController:
         state['speed_cps'] = new_cps
         state['speed_hz'] = new_speed
 
-        update_stepper_freq(new_speed, device)
+        if state['closed_loop']:
+            update_stepper_freq(new_speed, device)
 
         return new_speed
