@@ -1,3 +1,13 @@
 *.pyc
 *.pyd
 .*.sw*
+build
+dist
+MANIFEST
+*.pyc
+*.egg-info
+*.egg
+.eggs
+docs/_build/
+.coverage
+.tox/
