@@ -103,13 +103,24 @@ def index():
 
 
 @socketio.on('get_control_state')
-def ws_get_control_state():
-    return devices.get()[0].controller.state
+def ws_get_control_state(device_id=None):
+    if device_id is not None:
+        try:
+            return devices.get(device_id).controller.state
+        except AttributeError:
+            pass
+    else:
+        return [device.controller.state for device in devices.get()]
 
 
 @socketio.on('set_control_state')
-def ws_set_control_state(new_state):
-    pid_controller = devices.get()[0].controller.pid_controller
+def ws_set_control_state(device_id, new_state):
+    device = devices.get(device_id)
+
+    if not device:
+        return
+
+    pid_controller = device.controller.pid_controller
 
     Kp = new_state.get('Kp', None)
     Ki = new_state.get('Ki', None)
