@@ -97,13 +97,6 @@ def build_polling_task(device):
     return poller
 
 
-def process(par, val):
-    socketio.emit('position', {
-        'value': val,
-        'time': datetime.now().isoformat(),
-    }, broadcast=True)
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
