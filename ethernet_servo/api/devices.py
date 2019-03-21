@@ -37,8 +37,6 @@ class DeviceTracking(BaseResource):
         return device
 
 
-
-
 @ns.route('/<string:name>/reset')
 @ns.param('name', 'The servo controller name as configured')
 class DeviceReset(BaseResource):
@@ -47,6 +45,31 @@ class DeviceReset(BaseResource):
     def get(self, name):
         device = self.get_device(name)
 
+        device.controller.tracking = False
         device.controller.target_raw = device.controller.position
-        #device.controller.tracking = True
+        return device
+
+
+@ns.route('/<string:name>/halt')
+@ns.param('name', 'The servo controller name as configured')
+class DeviceHalt(BaseResource):
+    @ns.doc('Set this servo to work in open loop, stops all motion')
+    @ns.marshal_with(models.DeviceStatus)
+    def put(self, name):
+        device = self.get_device(name)
+
+        device.controller.closed_loop = False
+        device.controller.tracking = False
+        return device
+
+
+@ns.route('/<string:name>/resume')
+@ns.param('name', 'The servo controller name as configured')
+class DeviceResume(BaseResource):
+    @ns.doc('Set this servo to work in closed loop')
+    @ns.marshal_with(models.DeviceStatus)
+    def put(self, name):
+        device = self.get_device(name)
+
+        device.controller.closed_loop = True
         return device
