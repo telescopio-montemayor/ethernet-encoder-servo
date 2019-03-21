@@ -21,7 +21,7 @@ class DeviceSyncRaw(BaseResource):
 
 @ns.route('/<string:name>/sync/astronomical')
 @ns.param('name', 'The servo controller name as configured')
-class DeviceSyncRaw(BaseResource):
+class DeviceSyncAstronomical(BaseResource):
     @ns.doc('Syncs current position (astronomical)')
     @ns.marshal_with(models.DeviceStatus)
     @ns.expect(models.AstronomicalPosition)
@@ -39,7 +39,7 @@ class DeviceSyncRaw(BaseResource):
 # XXX FIXME: usar modelo de angle verdadero
 @ns.route('/<string:name>/sync/angle')
 @ns.param('name', 'The servo controller name as configured')
-class DeviceSyncRaw(BaseResource):
+class DeviceSyncAngle(BaseResource):
     @ns.doc('Syncs current position (angle)')
     @ns.marshal_with(models.DeviceStatus)
     @ns.expect(models.AnglePosition)

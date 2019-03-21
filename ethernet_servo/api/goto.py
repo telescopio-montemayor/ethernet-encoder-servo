@@ -74,7 +74,7 @@ class DeviceGotoRelativeAngle(BaseResource):
 
 @ns.route('/<string:name>/goto/relative/astronomical')
 @ns.param('name', 'The servo controller name as configured')
-class DeviceGotoRelativeAngle(BaseResource):
+class DeviceGotoRelativeAstronomical(BaseResource):
     @ns.doc('Sets target position (astronomical) relative to current position')
     @ns.marshal_with(models.DeviceStatus)
     @ns.expect(models.AstronomicalPosition)
