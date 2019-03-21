@@ -262,6 +262,10 @@ class ServoController:
 
     @target_raw.setter
     def target_raw(self, raw_target):
+        self.closed_loop = True
+        return self.__set_target_raw(raw_target)
+
+    def __set_target_raw(self, raw_target):
         self.pid_controller.SetPoint = raw_target + self._state['offset']
         self._astronomical_target = AstronomicalPosition.from_degrees(self.target_angle.to_decimal())
 
@@ -356,18 +360,16 @@ class ServoController:
 
         if state['closed_loop']:
             new_cps = self.pid_controller.update(position)
-        else:
-            self.target_raw = position
+            if device.invert:
+                new_cps = -1.0 * new_cps
 
-        if device.invert:
-            new_cps = -1.0 * new_cps
-
-        counts_per_step = 1.0 * COUNTS_PER_REVOLUTION / device.steps
-        new_speed = cps_to_hz(new_cps, counts_per_step)
-        state['speed_cps'] = new_cps
-        state['speed_hz'] = new_speed
-
-        if state['closed_loop']:
+            counts_per_step = 1.0 * COUNTS_PER_REVOLUTION / device.steps
+            new_speed = cps_to_hz(new_cps, counts_per_step)
             update_stepper_freq(new_speed, device)
+            state['speed_cps'] = new_cps
+            state['speed_hz'] = new_speed
 
-        return new_speed
+        else:
+            self.__set_target_raw(position)
+
+        return state['speed_hz']
