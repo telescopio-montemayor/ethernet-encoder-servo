@@ -23,6 +23,10 @@ def register(application):
         r"/api/*": {
             "origins": "*",
             "supports_credentials": True,
+        },
+        r"/socket.io/*": {
+            "origins": "*",
+            "supports_credentials": True,
         }
     })
 
