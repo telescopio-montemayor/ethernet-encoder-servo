@@ -16,6 +16,7 @@ Device = api.model('Device', {
     'serial_port': fields.String,
     'supports_hour_angle': fields.Boolean,
     'can_track': fields.Boolean,
+    'closed_loop': fields.Boolean(attribute='controller.state.closed_loop'),
     # XXX FIXME: 'controller': fields.
 })
 
@@ -46,6 +47,7 @@ AstronomicalPosition = api.model('AstronomicalPosition', {
 DeviceStatus = api.model('DeviceStatus', {
     'name': fields.String,
     'tracking': fields.Boolean(attribute='controller.state.tracking'),
+    'closed_loop': fields.Boolean(attribute='controller.state.closed_loop'),
     'target': fields.Float(attribute='controller.state.target'),
     'target_angle': fields.Nested(model=AnglePosition, attribute='controller.state.target_angle'),
     'target_astronomical': fields.Nested(model=AstronomicalPosition, attribute='controller.state.target_astronomical'),
