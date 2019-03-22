@@ -210,7 +210,7 @@ class ServoController:
         DEADBAND_LIMIT = COUNTS_PER_REVOLUTION / (2.0 * device.steps)
 
         self._state = {
-            'closed_loop': True,
+            'closed_loop': False,
             'old_value': None,
             'old_timestamp': None,
             'position': 0,  # this takes into account wraparounds
