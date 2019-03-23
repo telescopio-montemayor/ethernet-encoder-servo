@@ -219,12 +219,18 @@ class ServoController:
             'dt': device.interval / 1000,
             'offset': 0,
         }
+
         self.position_filter = MovingAverage(length=3)
         self.pid_controller = PidController(slew_rate=SLEW_RATE_LIMIT, saturation_limit=hz_to_cps(device.max_speed, device.steps), deadband=DEADBAND_LIMIT)
         self.pid_controller.sample_time = device.interval / 1000
-        self.pid_controller.SetPoint = 0
-        self.tracking = False
         self._astronomical_target = None
+
+        if device.initial_state:
+            self._state.update(device.initial_state)
+
+        self.pid_controller.SetPoint = self._state.get('target', 0)
+        self.tracking = False
+        self._state['closed_loop'] = False
 
     @property
     def state(self):

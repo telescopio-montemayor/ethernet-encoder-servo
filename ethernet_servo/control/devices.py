@@ -44,6 +44,7 @@ class Device(object):
     supports_hour_angle = attr.ib(default=False)
     can_track = attr.ib(default=False)
     serial_port = attr.ib(default=None, init=False)
+    initial_state = attr.ib(default=None)
     controller = attr.ib(init=False, default=attr.Factory(control.ServoController, takes_self=True))
 
 
