@@ -4,11 +4,14 @@
 from gevent import monkey
 monkey.patch_all() # noqa
 
+import atexit
+
 import json
 import logging
 import argparse
 from datetime import datetime
 
+import munch
 
 from flask import Flask, render_template, g
 from flask.json import jsonify
@@ -19,7 +22,7 @@ from cpppo.server.enip.get_attribute import proxy_simple
 from cpppo.server.enip import poll
 
 from . import api
-from .control import devices
+from .control import devices, units
 
 log = logging.getLogger('ethernet-encoder-servo')
 
@@ -144,8 +147,37 @@ def ws_set_control_state(device_id, new_state):
         pid_controller.SetPoint = setpoint
 
 
+def save_state(path, *args, **kwargs):
+    all_state = {}
+    for device in devices.get():
+        state = device.controller.state
+        for k, v in state.items():
+            if v.__class__ in (units.AnglePosition, units.AstronomicalPosition):
+                state[k] = v.to_dict()
+        all_state[device.id] = state
+
+    with open(path, 'w') as f:
+        f.write(munch.munchify(all_state).toJSON(indent=4))
+
+
+def load_state(path):
+    contents = ''
+    try:
+        with open(path, 'r') as f:
+            contents = f.read()
+
+    except FileNotFoundError:
+        return {}
+
+    try:
+        return json.loads(contents)
+    except:
+        return {}
+
+
 def main():
 
+    initial_state = {}
     pollers = []
 
     parser = argparse.ArgumentParser()
@@ -174,6 +206,8 @@ def main():
                         required=True,
                         help='Path to the configuration JSON file')
 
+    parser.add_argument('--state-store-path', type=str, required=False, default='', help='Path to load and save encoder status (JSON)')
+
     parser.add_argument('--serial',
                         type=str,
                         default='/dev/ttyACM0',
@@ -188,6 +222,9 @@ def main():
         logging.basicConfig()
         log.setLevel(level=logging.INFO)
 
+    if args.state_store_path:
+        atexit.register(save_state, path=args.state_store_path)
+        initial_state.update(load_state(args.state_store_path))
 
     with open(args.config, 'r') as config_file:
         config = json.load(config_file)
