@@ -16,9 +16,9 @@ setup(
     include_package_data=True,
     install_requires=[
         'attrs',
-        'cpppo==3.9.5',
-        'greenery==2.1',
-        'ipaddress==1.0.18',
+        'cpppo',
+        'greenery',
+        'ipaddress',
         'astropy',
         'pyserial',
         'flask',
@@ -26,7 +26,8 @@ setup(
         'flask-socketio',
         'flask-restplus',
         'flask-cors',
-        'eventlet',
+        'gevent',
+        'gevent-websocket'
     ],
     license='AGPL-3.0',
     description='Networked servo controller around CIP encoders and step/direction motors for use with a telescope.',

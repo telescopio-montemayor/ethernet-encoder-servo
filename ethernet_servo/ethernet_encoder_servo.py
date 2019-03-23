@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import eventlet
-# cpppo uses blocking network calls, so we need this in order to play nice with flask-socketio
-eventlet.monkey_patch()     # noqa
+## cpppo uses blocking network calls, so we need this in order to play nice with flask-socketio
+from gevent import monkey
+monkey.patch_all() # noqa
 
 import json
 import logging
@@ -28,7 +28,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 api.register(app)
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='gevent')
 
 POSITION_PARAM = '@0x23/1/0x0a'
 VELOCITY_PARAM = '@0x23/1/0x18'
@@ -145,8 +145,6 @@ def ws_set_control_state(device_id, new_state):
 
 
 def main():
-    import signal
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     pollers = []
 
@@ -185,8 +183,11 @@ def main():
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+        log.setLevel(level=logging.DEBUG)
     else:
         logging.basicConfig()
+        log.setLevel(level=logging.INFO)
+
 
     with open(args.config, 'r') as config_file:
         config = json.load(config_file)
@@ -206,4 +207,4 @@ def main():
             pollers.append(poller)
 
     # reloader launchs another thread for the main process and that means two instances of the controller and encoder poller but only one of them is managed by the UI. Fun times.
-    socketio.run(app, host=args.host, port=args.port, use_reloader=False, debug=True)
+    socketio.run(app, host=args.host, port=args.port, use_reloader=False, debug=True, log_output=True)
