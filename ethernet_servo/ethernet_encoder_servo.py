@@ -229,6 +229,7 @@ def main():
     with open(args.config, 'r') as config_file:
         config = json.load(config_file)
         for idx, device_config in enumerate(config.get('devices', [])):
+            device_config['initial_state'] = initial_state.get(device_config['id'], {})
             device = devices.create(**device_config)
 
             if not args.dry_run:
