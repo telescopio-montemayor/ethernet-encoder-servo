@@ -1,7 +1,12 @@
 import datetime
 from collections import deque
+import logging
+
+import serial
 
 from ethernet_servo.control.units import AnglePosition, AstronomicalPosition
+
+log = logging.getLogger('ethernet-encoder-servo')
 
 STEPS_PER_REVOLUTION = 25600
 COUNTS_PER_REVOLUTION = 262144
@@ -17,16 +22,36 @@ def hz_to_cps(hz, counts_per_step=COUNTS_PER_STEP):
     return counts_per_step * hz
 
 
-def update_stepper_freq(freq, device):
-    serial_port = device.serial_port
-    if not serial_port:
-        return
+class SerialPortInterface:
+    def __init__(self, serial_path='/dev/ttyUSB0'):
+        self.serial_path = serial_path
+        self.serial_port = None
 
-    freq = saturate(freq, device.max_speed)
+    def __open(self):
+        self.serial_port = serial.Serial(self.serial_path, baudrate=57600)
+        self.serial_port.write_timeout = 0.05
+        self.serial_port.read_timeout = 0.05
+        log.info('serial port connected')
 
-    payload = '\n{0}{1:-7.0f}\n'.format(device.axis, freq).encode('ascii')
-    serial_port.write(payload)
-    serial_port.flush()
+    def update_stepper_frequency(self, freq, device):
+        if not self.serial_port:
+            try:
+                self.__open()
+            except:
+                return
+
+        freq = saturate(freq, device.max_speed)
+
+        payload = '\n{0}{1:-7.0f}\n'.format(device.axis, freq).encode('ascii')
+        try:
+            self.serial_port.write(payload)
+            self.serial_port.flush()
+        except serial.SerialTimeoutException:
+            log.info('serial port write timeout')
+        except serial.SerialException:
+            log.info('serial port disconnected')
+            self.serial_port.close()
+            self.serial_port = None
 
 
 def slew_rate_limit(next_value, current_value, slew_rate):
@@ -378,7 +403,9 @@ class ServoController:
 
             counts_per_step = 1.0 * COUNTS_PER_REVOLUTION / device.steps
             new_speed = cps_to_hz(new_cps, counts_per_step)
-            update_stepper_freq(new_speed, device)
+
+            device.serial_interface.update_stepper_frequency(new_speed, device)
+
             state['speed_cps'] = new_cps
             state['speed_hz'] = new_speed
 

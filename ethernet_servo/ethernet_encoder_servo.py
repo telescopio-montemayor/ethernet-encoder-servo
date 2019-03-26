@@ -20,12 +20,11 @@ from flask import Flask, render_template, g
 from flask.json import jsonify
 from flask_socketio import SocketIO
 
-import serial
 from cpppo.server.enip.get_attribute import proxy_simple
 from cpppo.server.enip import poll
 
 from . import api
-from .control import devices, units
+from .control import devices, units, SerialPortInterface
 
 log = logging.getLogger('ethernet-encoder-servo')
 
@@ -247,11 +246,10 @@ def main():
             device_config['initial_state'] = initial_state.get(device_config['id'], {})
             device = devices.create(**device_config)
 
-            if not args.dry_run:
-                serial_port = serial.Serial(args.serial, baudrate=57600)
-                serial_port.write_timeout = 0.05
-                serial_port.read_timeout = 0.05
-                device.serial_port = serial_port
+        if not args.dry_run:
+            serial_interface = SerialPortInterface(args.serial)
+            for device in devices.get():
+                device.serial_interface = serial_interface
 
     if not args.dry_run:
         for device in devices.get():
