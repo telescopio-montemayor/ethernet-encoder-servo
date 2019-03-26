@@ -229,7 +229,7 @@ class ServoController:
             self._state.update(device.initial_state)
 
         self.pid_controller.SetPoint = self._state.get('target', 0)
-        self.tracking = False
+        self._state['tracking'] = False
         self._state['closed_loop'] = False
 
     @property
@@ -237,7 +237,6 @@ class ServoController:
         state = dict(self._state)
 
         state.update({
-            'tracking': self.tracking,
             'target': self.target_raw,
             'target_angle': self.target_angle,
             'target_astronomical': self.target_astronomical,
@@ -253,6 +252,14 @@ class ServoController:
         })
         state.pop('old_timestamp', None)
         return state
+
+    @property
+    def tracking(self):
+        return self._state['tracking']
+
+    @tracking.setter
+    def tracking(self, value):
+        self._state['tracking'] = bool(value)
 
     @property
     def closed_loop(self):
@@ -361,7 +368,7 @@ class ServoController:
         state['old_timestamp'] = now
         # FIXME XXX device['timestamp'] = now_formatted
 
-        if self.tracking:
+        if state['tracking']:
             self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
 
         if state['closed_loop']:
