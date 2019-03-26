@@ -213,7 +213,7 @@ def main():
     parser.add_argument('--serial',
                         type=str,
                         default='/dev/ttyACM0',
-                        help='Serial port to use for speed control (/dev/ttyUSB0)')
+                        help='Serial port to use for speed control (/dev/ttyACM0)')
 
     args = parser.parse_args()
 
