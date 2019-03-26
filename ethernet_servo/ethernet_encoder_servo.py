@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 ## cpppo uses blocking network calls, so we need this in order to play nice with flask-socketio
-from gevent import monkey
-monkey.patch_all() # noqa
+import gevent
+import gevent.monkey
+gevent.monkey.patch_all() # noqa
 
+import sys
+import signal
 import atexit
 
 import json
@@ -224,6 +227,18 @@ def main():
 
     if args.state_store_path:
         atexit.register(save_state, path=args.state_store_path)
+
+        def exit_handler(*a, **k):
+            for device in devices.get():
+                device.controller.closed_loop = False
+            log.info('Halting motors')
+            socketio.sleep(1)
+            log.info('Halting done. Saving state')
+            sys.exit(0)
+
+        gevent.signal(signal.SIGTERM, exit_handler)
+        gevent.signal(signal.SIGINT, exit_handler)
+        gevent.signal(signal.SIGQUIT, exit_handler)
         initial_state.update(load_state(args.state_store_path))
 
     with open(args.config, 'r') as config_file:
