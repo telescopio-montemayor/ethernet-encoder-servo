@@ -17,7 +17,8 @@ setup(
     install_requires=[
         'attrs',
         'cpppo',
-        'greenery',
+        'greenery==2.1',
+        'munch',
         'ipaddress',
         'astropy',
         'pyserial',
