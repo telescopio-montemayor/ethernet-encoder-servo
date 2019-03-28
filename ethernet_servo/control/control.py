@@ -384,8 +384,7 @@ class ServoController:
         state['position'] = new_position
         state['old_value'] = feedback_value
 
-        new_position = self.position_filter.process(new_position)
-        position = new_position
+        position = self.position_filter.process(new_position)
 
         if state['old_timestamp'] is not None:
             state['dt'] = (now - state['old_timestamp']).total_seconds()
@@ -396,8 +395,12 @@ class ServoController:
         if state['tracking']:
             self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
 
+        if not state['closed_loop']:
+            self.__set_target_raw(self.position)
+
+        new_cps = self.pid_controller.update(position)
+
         if state['closed_loop']:
-            new_cps = self.pid_controller.update(position)
             if device.invert:
                 new_cps = -1.0 * new_cps
 
@@ -408,8 +411,5 @@ class ServoController:
 
             state['speed_cps'] = new_cps
             state['speed_hz'] = new_speed
-
-        else:
-            self.__set_target_raw(position)
 
         return state['speed_hz']
