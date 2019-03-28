@@ -296,7 +296,7 @@ class ServoController:
 
     @property
     def target_raw(self):
-        return self.pid_controller.SetPoint
+        return self.pid_controller.SetPoint - self._state['offset']
 
     @target_raw.setter
     def target_raw(self, raw_target):
