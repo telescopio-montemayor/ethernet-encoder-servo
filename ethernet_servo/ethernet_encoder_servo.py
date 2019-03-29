@@ -12,6 +12,7 @@ import atexit
 import json
 import logging
 import argparse
+import functools
 from datetime import datetime
 
 import munch
@@ -238,6 +239,7 @@ def main():
         gevent.signal(signal.SIGTERM, exit_handler)
         gevent.signal(signal.SIGINT, exit_handler)
         gevent.signal(signal.SIGQUIT, exit_handler)
+        gevent.signal(signal.SIGHUP, functools.partial(save_state, path=args.state_store_path))
         initial_state.update(load_state(args.state_store_path))
 
     with open(args.config, 'r') as config_file:
