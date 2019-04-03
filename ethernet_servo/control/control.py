@@ -432,7 +432,7 @@ class ServoController:
             self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
 
         if state['free_running']:
-            self.__set_target_raw(self.target_raw + state['run_speed_raw'] / state['dt'])
+            self.__set_target_raw(self.target_raw + state['run_speed_raw'] * state['dt'])
 
         if not state['closed_loop']:
             self.__set_target_raw(self.position)
