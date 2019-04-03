@@ -210,6 +210,7 @@ def main():
                         help='Path to the configuration JSON file')
 
     parser.add_argument('--state-store-path', type=str, required=False, default='', help='Path to load and save encoder status (JSON)')
+    parser.add_argument('--state-save-interval', required=False, default=1000,  type=int, help='Interval in milliseconds between state saving')
 
     parser.add_argument('--serial',
                         type=str,
@@ -226,6 +227,8 @@ def main():
         log.setLevel(level=logging.INFO)
 
     if args.state_store_path:
+        save_interval = max(args.state_save_interval, 250)
+
         atexit.register(save_state, path=args.state_store_path)
 
         def exit_handler(*a, **k):
@@ -236,10 +239,17 @@ def main():
             log.info('Halting done. Saving state')
             sys.exit(0)
 
+        def background_save(path=args.state_store_path, save_interval=save_interval):
+            while True:
+                save_state(path)
+                socketio.sleep(save_interval / 1000.0)
+
         gevent.signal(signal.SIGTERM, exit_handler)
         gevent.signal(signal.SIGINT, exit_handler)
         gevent.signal(signal.SIGQUIT, exit_handler)
+
         gevent.signal(signal.SIGHUP, functools.partial(save_state, path=args.state_store_path))
+        socketio.start_background_task(background_save)
         initial_state.update(load_state(args.state_store_path))
 
     with open(args.config, 'r') as config_file:
