@@ -243,6 +243,7 @@ class ServoController:
             'speed_hz': 0,
             'dt': device.interval / 1000,
             'offset': 0,
+            'run_speed_raw': 0,     # raw counts per second
         }
 
         self.position_filter = MovingAverage(length=3)
@@ -253,8 +254,10 @@ class ServoController:
         if device.initial_state:
             self._state.update(device.initial_state)
 
+
         self.pid_controller.SetPoint = self._state.get('target', 0)
         self._state['tracking'] = False
+        self._state['free_running'] = False
         self._state['closed_loop'] = False
 
     @property
@@ -267,6 +270,7 @@ class ServoController:
             'target_astronomical': self.target_astronomical,
             'position_angle': self.position_angle,
             'position_astronomical': self.position_astronomical,
+            'run_speed': self.run_speed,
             'Kp': self.pid_controller.Kp,
             'Ki': self.pid_controller.Ki,
             'Kd': self.pid_controller.Kd,
@@ -287,12 +291,42 @@ class ServoController:
         self._state['tracking'] = bool(value)
 
     @property
+    def free_running(self):
+        return self._state['free_running']
+
+    @free_running.setter
+    def free_running(self, value):
+        self._state['free_running'] = bool(value)
+
+    @property
+    def run_speed(self):
+        return AnglePosition.from_decimal(self._state['run_speed_raw'] * self.RAW_TO_ANGLE)
+
+    @run_speed.setter
+    def run_speed(self, speed):
+        """ Sets speed for continuous rotation in degrees per second """
+        try:
+            run_speed_raw = speed * self.ANGLE_TO_RAW
+        except TypeError:
+            run_speed_raw = speed.to_decimal() * self.ANGLE_TO_RAW
+
+        self._state['run_speed_raw'] = run_speed_raw
+        if run_speed_raw != 0:
+            self.free_running = True
+            self.closed_loop = True
+        else:
+            self.free_running = False
+        return speed
+
+    @property
     def closed_loop(self):
         return self._state['closed_loop']
 
     @closed_loop.setter
     def closed_loop(self, value):
         self._state['closed_loop'] = bool(value)
+        if not value:
+            self.free_running = False
 
     @property
     def target_raw(self):
@@ -301,6 +335,7 @@ class ServoController:
     @target_raw.setter
     def target_raw(self, raw_target):
         self.closed_loop = True
+        self.free_running = False
         return self.__set_target_raw(raw_target)
 
     def __set_target_raw(self, raw_target):
@@ -392,8 +427,12 @@ class ServoController:
         state['old_timestamp'] = now
         # FIXME XXX device['timestamp'] = now_formatted
 
-        if state['tracking']:
+        if state['tracking'] and not state['free_running']:
+            # WARNING: keep it this way so we do not loose the original Astronomical Target
             self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
+
+        if state['free_running']:
+            self.__set_target_raw(self.target_raw + state['run_speed_raw'] / state['dt'])
 
         if not state['closed_loop']:
             self.__set_target_raw(self.position)
