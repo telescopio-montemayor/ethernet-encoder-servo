@@ -37,6 +37,23 @@ class DeviceTracking(BaseResource):
         return device
 
 
+@ns.route('/<string:name>/run_speed')
+@ns.param('name', 'The servo controller name as configured')
+class DeviceFreeRun(BaseResource):
+    @ns.doc('Set this servo to run at the specified degrees per second')
+    @ns.marshal_with(models.DeviceStatus)
+    @ns.expect(models.AnglePosition)
+    def put(self, name):
+        device = self.get_device(name)
+
+        speed = control.units.AnglePosition()
+        speed.degrees = api.payload['degrees']
+        speed.minutes = api.payload['minutes']
+        speed.seconds = api.payload['seconds']
+        device.controller.run_speed = speed
+        return device
+
+
 @ns.route('/<string:name>/reset')
 @ns.param('name', 'The servo controller name as configured')
 class DeviceReset(BaseResource):
@@ -46,6 +63,7 @@ class DeviceReset(BaseResource):
         device = self.get_device(name)
 
         device.controller.tracking = False
+        device.controller.free_running = False
         device.controller.target_raw = device.controller.position
         return device
 
