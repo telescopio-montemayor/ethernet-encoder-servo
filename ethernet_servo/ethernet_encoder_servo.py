@@ -83,6 +83,7 @@ def build_process_function(device):
             'target_astronomical': state['target_astronomical'].to_dict(),
             'position_angle': state['position_angle'].to_dict(),
             'position_astronomical': state['position_astronomical'].to_dict(),
+            'run_speed': state['run_speed'].to_dict(),
         })
         socketio.emit(parameter, state, broadcast=True)
 
