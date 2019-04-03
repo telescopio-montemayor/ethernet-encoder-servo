@@ -47,6 +47,8 @@ AstronomicalPosition = api.model('AstronomicalPosition', {
 DeviceStatus = api.model('DeviceStatus', {
     'name': fields.String,
     'tracking': fields.Boolean(attribute='controller.state.tracking'),
+    'free_running': fields.Boolean(attribute='controller.state.free_running'),
+    'run_speed': fields.Nested(model=AnglePosition, attribute='controller.state.run_speed'),
     'closed_loop': fields.Boolean(attribute='controller.state.closed_loop'),
     'target': fields.Float(attribute='controller.state.target'),
     'target_angle': fields.Nested(model=AnglePosition, attribute='controller.state.target_angle'),
