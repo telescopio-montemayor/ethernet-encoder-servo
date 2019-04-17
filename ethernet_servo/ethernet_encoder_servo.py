@@ -46,11 +46,38 @@ def failure(exc):
     log.error(exc)
 
 
+def broadcast_device_state(device, parameter='position', broadcast=True):
+
+    now = datetime.now()
+    now_formatted = now.isoformat()
+
+    controller = device.controller
+    state = controller.state
+
+    state.update({
+        'id': device.id,
+        'name': device.name,
+        'host': device.host,
+        'port': device.port,
+        'interval': device.interval,
+        'dt': state['dt'],
+        'steps': device.steps,
+        'offset': device.offset,
+        'value': state['position'],
+        'control_out': state['speed_cps'],
+        'timestamp': now_formatted,
+    })
+
+    for k, v in state.items():
+        if v.__class__ in (units.AnglePosition, units.AstronomicalPosition):
+            state[k] = v.to_dict()
+
+    socketio.emit(parameter, state, broadcast=True)
+
+
 def build_process_function(device):
 
     def _process(par, val):
-        now = datetime.now()
-        now_formatted = now.isoformat()
         parameter = {
             POSITION_PARAM: 'position',
             VELOCITY_PARAM: 'velocity',
@@ -62,30 +89,9 @@ def build_process_function(device):
         value = val[0]
 
         controller = device.controller
-        state = controller.state
         controller.update(value)
 
-        state.update({
-            'estimated_speed': state['speed_cps'],
-            'id': device.id,
-            'name': device.name,
-            'host': device.host,
-            'port': device.port,
-            'interval': device.interval,
-            'dt': state['dt'],
-            'steps': device.steps,
-            'offset': device.offset,
-            'value': state['position'],
-            'raw_value': value,
-            'control_out': state['speed_cps'],
-            'timestamp': now_formatted,
-        })
-
-        for k, v in state.items():
-            if v.__class__ in (units.AnglePosition, units.AstronomicalPosition):
-                state[k] = v.to_dict()
-
-        socketio.emit(parameter, state, broadcast=True)
+        broadcast_device_state(device, parameter)
 
     return _process
 
