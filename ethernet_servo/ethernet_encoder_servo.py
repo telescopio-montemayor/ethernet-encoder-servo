@@ -185,6 +185,13 @@ def load_state(path):
         return {}
 
 
+def simulate_updates():
+    while True:
+        for device in devices.get():
+            broadcast_device_state(device)
+        socketio.sleep(.5)
+
+
 def main():
 
     initial_state = {}
@@ -275,6 +282,8 @@ def main():
             log.info('Starting polling task for: %s', device)
             poller = build_polling_task(device)
             pollers.append(poller)
+    else:
+        socketio.start_background_task(simulate_updates)
 
     # reloader launchs another thread for the main process and that means two instances of the controller and encoder poller but only one of them is managed by the UI. Fun times.
     socketio.run(app, host=args.host, port=args.port, use_reloader=False, debug=True, log_output=True)
