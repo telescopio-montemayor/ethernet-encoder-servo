@@ -260,6 +260,9 @@ class ServoController:
         self._state['free_running'] = False
         self._state['closed_loop'] = False
 
+    def set_control_parameters(self, parameters):
+        raise NotImplementedError
+
     @property
     def state(self):
         state = dict(self._state)
