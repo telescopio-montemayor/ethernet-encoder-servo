@@ -91,3 +91,24 @@ class DeviceResume(BaseResource):
 
         device.controller.closed_loop = True
         return device
+
+
+@ns.route('/<string:name>/controller')
+@ns.param('name', 'The servo controller name as configured')
+class DeviceControllerState(BaseResource):
+    @ns.doc('Internal state of the motion controller')
+    @ns.marshal_with(models.ControllerState)
+    def get(self, name):
+        device = self.get_device(name)
+
+        return device.controller.state
+
+    @ns.doc('Changes the internal state parameters of the motion controller')
+    @ns.marshal_with(models.ControllerState)
+    @ns.expect(models.ControllerState)
+    def put(self, name):
+        device = self.get_device(name)
+
+        device.controller.set_control_parameters(api.payload)
+
+        return device.controller.state
