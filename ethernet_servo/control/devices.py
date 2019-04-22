@@ -40,10 +40,10 @@ class Device(object):
     gear_ratio_den = attr.ib(default=1)
     # XXX FIXME: this should be in units like angle / s^2 and then we convert for internal use
     # max_slew_rate = attr.ib(default=12000),
-    derivative_filtering = attr.ib(default=0.75),
-    Kp = attr.ib(default=1.8),
-    Ki = attr.ib(default=1),
-    Kd = attr.ib(default=1),
+    derivative_filtering = attr.ib(default=0.75)
+    Kp = attr.ib(default=1.8)
+    Ki = attr.ib(default=1)
+    Kd = attr.ib(default=1)
     offset = attr.ib(default=0)
     max_speed = attr.ib(default=DEFAULT_MAX_SPEED)
     interval = attr.ib(default=DEFAULT_INTERVAL)
