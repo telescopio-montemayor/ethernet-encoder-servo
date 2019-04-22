@@ -269,6 +269,7 @@ class ServoController:
 
         if device.initial_state:
             self._state.update(device.initial_state)
+            self.set_control_parameters(device.initial_state)
 
 
         self.pid_controller.SetPoint = self._state.get('target', 0)
