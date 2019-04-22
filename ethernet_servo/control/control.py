@@ -193,6 +193,22 @@ class PidController:
         self.last_error = 0
         self.last_input = 0
 
+    @property
+    def max_slew_rate(self):
+        return self.slew_rate_limiter.slew_rate
+
+    @max_slew_rate.setter
+    def max_slew_rate(self, value):
+        self.slew_rate_limiter.slew_rate = value
+
+    @property
+    def derivative_filtering(self):
+        return self.derivative_filter.alpha
+
+    @derivative_filtering.setter
+    def derivative_filtering(self, alpha):
+        self.derivative_filter.alpha = alpha
+
     def update(self, feedback_value):
 
         #error = self.slew_rate_limiter.process(self.SetPoint) - feedback_value
@@ -277,8 +293,8 @@ class ServoController:
             'Kp': self.pid_controller.Kp,
             'Ki': self.pid_controller.Ki,
             'Kd': self.pid_controller.Kd,
-            'alpha': self.pid_controller.derivative_filter.alpha,
-            'slew_rate_limit': self.pid_controller.slew_rate,
+            'derivative_filtering': self.pid_controller.derivative_filtering,
+            'max_slew_rate': self.pid_controller.max_slew_rate,
             'error': self.pid_controller.last_error,
             'output': self.pid_controller.last_output,
         })
