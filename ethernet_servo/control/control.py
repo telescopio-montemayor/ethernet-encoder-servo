@@ -267,10 +267,18 @@ class ServoController:
         self.pid_controller.sample_time = device.interval / 1000
         self._astronomical_target = None
 
+
+        self.set_control_parameters({
+            # 'max_slew_rate': device.max_slew_rate,
+            'derivative_filtering': device.derivative_filtering,
+            'Kp': device.Kp,
+            'Ki': device.Ki,
+            'Kd': device.Kd
+        })
+
         if device.initial_state:
             self._state.update(device.initial_state)
             self.set_control_parameters(device.initial_state)
-
 
         self.pid_controller.SetPoint = self._state.get('target', 0)
         self._state['tracking'] = False
