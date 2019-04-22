@@ -277,7 +277,11 @@ class ServoController:
         self._state['closed_loop'] = False
 
     def set_control_parameters(self, parameters):
-        raise NotImplementedError
+        controller = self.pid_controller
+        params = ['max_slew_rate', 'derivative_filtering', 'Kp', 'Ki', 'Kd']
+        for param in params:
+            if param in parameters:
+                setattr(controller, param, parameters[param])
 
     @property
     def state(self):
