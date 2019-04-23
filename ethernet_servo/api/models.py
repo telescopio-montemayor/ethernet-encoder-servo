@@ -44,20 +44,6 @@ AstronomicalPosition = api.model('AstronomicalPosition', {
     'seconds': fields.Float,
 })
 
-DeviceStatus = api.model('DeviceStatus', {
-    'name': fields.String,
-    'tracking': fields.Boolean(attribute='controller.state.tracking'),
-    'free_running': fields.Boolean(attribute='controller.state.free_running'),
-    'run_speed': fields.Nested(model=AnglePosition, attribute='controller.state.run_speed'),
-    'closed_loop': fields.Boolean(attribute='controller.state.closed_loop'),
-    'target': fields.Float(attribute='controller.state.target'),
-    'target_angle': fields.Nested(model=AnglePosition, attribute='controller.state.target_angle'),
-    'target_astronomical': fields.Nested(model=AstronomicalPosition, attribute='controller.state.target_astronomical'),
-    'position': fields.Float(attribute='controller.state.position'),
-    'position_angle': fields.Nested(model=AnglePosition, attribute='controller.state.position_angle'),
-    'position_astronomical': fields.Nested(model=AstronomicalPosition, attribute='controller.state.position_astronomical'),
-    'error': fields.Float(attribute='controller.state.error'),
-})
 
 ControllerState = api.model('ControllerState', {
     'offset': fields.Integer(attribute='offset', default=0),
@@ -75,4 +61,21 @@ ControllerState = api.model('ControllerState', {
     'run_speed': fields.Nested(model=AnglePosition, attribute='run_speed'),
     'closed_loop': fields.Boolean(attribute='closed_loop', default=False),
     'target': fields.Float(attribute='target'),
+})
+
+
+DeviceStatus = api.model('DeviceStatus', {
+    'name': fields.String,
+    'tracking': fields.Boolean(attribute='controller.state.tracking'),
+    'free_running': fields.Boolean(attribute='controller.state.free_running'),
+    'run_speed': fields.Nested(model=AnglePosition, attribute='controller.state.run_speed'),
+    'closed_loop': fields.Boolean(attribute='controller.state.closed_loop'),
+    'target': fields.Float(attribute='controller.state.target'),
+    'target_angle': fields.Nested(model=AnglePosition, attribute='controller.state.target_angle'),
+    'target_astronomical': fields.Nested(model=AstronomicalPosition, attribute='controller.state.target_astronomical'),
+    'position': fields.Float(attribute='controller.state.position'),
+    'position_angle': fields.Nested(model=AnglePosition, attribute='controller.state.position_angle'),
+    'position_astronomical': fields.Nested(model=AstronomicalPosition, attribute='controller.state.position_astronomical'),
+    'error': fields.Float(attribute='controller.state.error'),
+    'pid': fields.Nested(model=ControllerState, attribute='controller.state')
 })
