@@ -303,11 +303,13 @@ class ServoController:
             'position_angle': self.position_angle,
             'position_astronomical': self.position_astronomical,
             'run_speed': self.run_speed,
-            'Kp': self.pid_controller.Kp,
-            'Ki': self.pid_controller.Ki,
-            'Kd': self.pid_controller.Kd,
-            'derivative_filtering': self.pid_controller.derivative_filtering,
-            'max_slew_rate': self.pid_controller.max_slew_rate,
+            'pid': {
+                'Kp': self.pid_controller.Kp,
+                'Ki': self.pid_controller.Ki,
+                'Kd': self.pid_controller.Kd,
+                'derivative_filtering': self.pid_controller.derivative_filtering,
+                'max_slew_rate': self.pid_controller.max_slew_rate,
+            },
             'error': self.pid_controller.last_error,
             'output': self.pid_controller.last_output,
         })
