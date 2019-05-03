@@ -211,25 +211,25 @@ def main():
     parser.add_argument('--host',
                         required=False,
                         default='127.0.0.1',
-                        help='The hostname or IP address for the server to listen on. Defaults to 127.0.0.1')
+                        help='The hostname or IP address for the server to listen on. Defaults to %(default)s')
 
     parser.add_argument('--port',
                         required=False,
                         default=5000,
                         type=int,
-                        help='The port number for the server to listen on. Defaults to 5000')
+                        help='The port number for the server to listen on. Defaults to %(default)s')
 
     parser.add_argument('--config',
                         required=True,
                         help='Path to the configuration JSON file')
 
     parser.add_argument('--state-store-path', type=str, required=False, default='', help='Path to load and save encoder status (JSON)')
-    parser.add_argument('--state-save-interval', required=False, default=1000,  type=int, help='Interval in milliseconds between state saving')
+    parser.add_argument('--state-save-interval', required=False, default=1000,  type=int, help='Interval in milliseconds between state saving. Defaults to %(default)s')
 
     parser.add_argument('--serial',
                         type=str,
                         default='/dev/ttyACM0',
-                        help='Serial port to use for speed control (/dev/ttyACM0)')
+                        help='Serial port to use for speed control (%(default)s')
 
     args = parser.parse_args()
 
