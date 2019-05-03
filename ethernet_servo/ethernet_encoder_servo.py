@@ -251,6 +251,7 @@ def main():
             log.info('Halting motors')
             socketio.sleep(1)
             log.info('Halting done. Saving state')
+            save_state(path=args.state_store_path)
             sys.exit(0)
 
         def background_save(path=args.state_store_path, save_interval=save_interval):
