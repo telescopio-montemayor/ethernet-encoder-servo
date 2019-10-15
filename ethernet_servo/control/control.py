@@ -399,7 +399,6 @@ class ServoController:
     @target_astronomical.setter
     def target_astronomical(self, target):
         self.target_angle = target.to_degrees()
-        self._astronomical_target = target
         self.tracking = True
 
     @property
