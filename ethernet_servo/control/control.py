@@ -466,7 +466,7 @@ class ServoController:
 
         if state['tracking'] and not state['free_running']:
             # WARNING: keep it this way so we do not loose the original Astronomical Target
-            self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW
+            self.pid_controller.SetPoint = self.target_astronomical.to_degrees() * self.ANGLE_TO_RAW + self._state['offset']
 
         if state['free_running']:
             self.__set_target_raw(self.target_raw + state['run_speed_raw'] * state['dt'])
