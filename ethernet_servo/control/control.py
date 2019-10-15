@@ -419,11 +419,12 @@ class ServoController:
         self._state['offset'] = self._state['position'] - real_raw_position
 
     def sync_angle(self, real_angle_position):
-        return self.sync_raw(real_angle_position * self.ANGLE_TO_RAW)
+        self.sync_raw(real_angle_position * self.ANGLE_TO_RAW)
+        self.target_angle = real_angle_position
 
     def sync_astronomical(self, real_astronomical_position):
-        self.tracking = True
-        return self.sync_raw(real_astronomical_position.to_degrees() * self.ANGLE_TO_RAW)
+        self.sync_raw(real_astronomical_position.to_degrees() * self.ANGLE_TO_RAW)
+        self.target_astronomical = real_astronomical_position
 
     def update(self, feedback_value):
         state = self._state
