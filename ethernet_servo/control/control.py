@@ -361,6 +361,8 @@ class ServoController:
         self._state['closed_loop'] = bool(value)
         if not value:
             self.free_running = False
+        else:
+            self.__set_target_raw(self.position)
 
     @property
     def target_raw(self):
